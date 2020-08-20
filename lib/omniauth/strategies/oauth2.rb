@@ -83,6 +83,13 @@ module OmniAuth
 
       def callback_phase # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         error = request.params["error_reason"] || request.params["error"]
+        puts "callback_phase DEBUG"
+        puts error.inspect
+        puts "ignore state: #{options.provider_ignores_state}"
+        puts session['omniauth.state']
+        puts request.params["state"]
+        puts "--------------------"
+
         if error
           fail!(error, CallbackError.new(request.params["error"], request.params["error_description"] || request.params["error_reason"], request.params["error_uri"]))
         elsif !options.provider_ignores_state && (request.params["state"].to_s.empty? || request.params["state"] != session.delete("omniauth.state"))
