@@ -104,6 +104,9 @@ module OmniAuth
           super
         end
       rescue ::OAuth2::Error, CallbackError => e
+	puts "CALLBACK ERROR!!!!"
+	puts e.backtrace
+	puts "-"*50
         fail!(:invalid_credentials, e)
       rescue ::Timeout::Error, ::Errno::ETIMEDOUT => e
         fail!(:timeout, e)
