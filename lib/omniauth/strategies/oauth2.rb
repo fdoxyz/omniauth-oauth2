@@ -100,7 +100,9 @@ module OmniAuth
           fail!(:csrf_detected, CallbackError.new(:csrf_detected, "CSRF detected"))
         else
           self.access_token = build_access_token
+          puts "Got the token #{self.access_token}"
           self.access_token = access_token.refresh! if access_token.expired?
+          puts "Refreshed the access token: #{self.access_token}"
           super
         end
       rescue ::OAuth2::Error, CallbackError => e
@@ -137,6 +139,8 @@ module OmniAuth
 
       def build_access_token
         verifier = request.params["code"]
+        puts "BUILDING with: #{verifier}"
+        puts "-"*20
         client.auth_code.get_token(verifier, {:redirect_uri => callback_url}.merge(token_params.to_hash(:symbolize_keys => true)), deep_symbolize(options.auth_token_params))
       end
 
