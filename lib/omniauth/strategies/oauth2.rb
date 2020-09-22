@@ -88,11 +88,19 @@ module OmniAuth
         elsif !options.provider_ignores_state && (request.params["state"].to_s.empty? || request.params["state"] != session.delete("omniauth.state"))
           fail!(:csrf_detected, CallbackError.new(:csrf_detected, "CSRF detected"))
         else
+          puts "Working with access token..."
           self.access_token = build_access_token
+          puts "Got access token: #{self.access_token}"
+          puts "Expired? #{access_token.expired?}"
           self.access_token = access_token.refresh! if access_token.expired?
           super
         end
       rescue ::OAuth2::Error, CallbackError => e
+        puts "OAuth2 Error during callback phase"
+        puts e.inspect
+        puts "-"*30
+        puts e.backtrace
+        puts "-"*30
         fail!(:invalid_credentials, e)
       rescue ::Timeout::Error, ::Errno::ETIMEDOUT => e
         fail!(:timeout, e)
@@ -123,6 +131,8 @@ module OmniAuth
 
       def build_access_token
         verifier = request.params["code"]
+        puts "Building access_token: #{verifier}"
+        puts "Callback URL: #{callback_url}"
         client.auth_code.get_token(verifier, {:redirect_uri => callback_url}.merge(token_params.to_hash(:symbolize_keys => true)), deep_symbolize(options.auth_token_params))
       end
 
